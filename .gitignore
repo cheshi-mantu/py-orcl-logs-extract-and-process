@@ -1,10 +1,13 @@
 #txt and log files
 *.txt
 *.csv
-*.tar
+*.inf
+#archives
 *.Z
 *.gz
 *.zip
+*.tar
+
 #folders
 LV
 TL
