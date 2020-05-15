@@ -1,0 +1,10 @@
+#txt and log files
+*.txt
+*.csv
+*.tar
+*.Z
+*.gz
+*.zip
+#folders
+LV
+TL
