@@ -45,7 +45,7 @@ def extractZandMove(str7ZipSysExecPath, strFilesFolder):
     #first pass is to extract all .Z files as they are archives with tar inside and we need tar to be extracted
     for root, dirs, files in os.walk(strFilesFolder):
         for file in files:
-            if ("Collection" in file) and ("tar.Z" in file):
+            if (("Collection" in file) and ("tar.Z" in file)) or (("Collection" in file) and ("tar.bz2" in file)):
                 print(f"Processing {root}\\{file}")
                 os.system(str7ZipSysExecPath + strCmdLineZ + root + "\\" + file)
     # move all .Z files and Debug archives to done folder
@@ -54,21 +54,26 @@ def extractZandMove(str7ZipSysExecPath, strFilesFolder):
         if not os.path.exists(strFilesFolder+"\\done"):
             os.mkdir(strFilesFolder+"\\done")
         for file in files:
-            if ("ebug" in file) or ("tar.Z" in file):
+            if ("ebug" in file) or ("tar.Z" in file) or ("tar.bz2" in file):
                 os.replace(root+"\\"+file, root+"\\done\\"+file)
         break
+#
 def extractTarsAndMove(str7ZipSysExecPath, strFilesFolder):
     #command line for 7Zip executable for tar archives extraction
     strCmdLine = " x -o" + strFilesFolder + "\\* "
     #second pass: extracting data from tar files
     # #traverse 1st level of the os.walk
     for root, dirs, files in os.walk(strFilesFolder):
-        for file in files:
-            if "Collection" in file:
-                print(f"Processing {root}\\{file}")
-                os.system(str7ZipSysExecPath + strCmdLine + root + "\\" + file)
-                os.replace(root + "\\" + file, root + "\\done\\" + file)
-        break
+        if "done" not in root:
+            for file in files:
+                if "Collection" in file:
+                    print(f"Processing {root}\\{file}")
+                    os.system(str7ZipSysExecPath + strCmdLine + root + "\\" + file)
+                    try:
+                        os.replace(root + "\\" + file, root + "\\done\\" + file)
+                    except:
+                        print("Something is troubling me")
+            break
 """
 Now runnig the scripts
 """
