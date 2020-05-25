@@ -14,6 +14,8 @@ siblings	: 3 <<<<<<<<<<<<<<<< collect take the value and add to the 4th record a
 core id		: 0 <<<<<<<<<<<<<<<< collect and count to 5th record
 cpu cores	: 3 <<<<<<<<<<<<<<<< collect and sum to 6th record
 """
+
+
 def getFileContent(strFullPath):
     """
     Returns a list containing lines from the file omitting script information
@@ -22,8 +24,9 @@ def getFileContent(strFullPath):
     Replaces ": " with ":" \n
     Adds file name to 1st position of the list \n
     :param strFullPath: Path to a file to read
-    :return: list with all strings, 1 element of the list is 1 string from the file
+    :return fileContent: list with all strings, 1 element of the list is 1 string from the file
     """
+    constForReading = "r"
     fileContent = []
     f = open(strFullPath, constForReading)  # open file for reading
     fileContent = f.read().splitlines()  # read full file and send it content spitted in lines to a list
@@ -34,25 +37,26 @@ def getFileContent(strFullPath):
     fileContent = [s.replace(": ", ":") for s in fileContent]  # replace : followed by space by just :
     fileContent = [s.replace("=", ":") for s in
                    fileContent]  # replace all = sign with : so it will be easier to process
-    fileContent.insert(0, "FileName:" + strFileName.split("\\")[-1])  # add file name to 1st position in list
+    fileContent.insert(0, "FileName:" + strFullPath.split("\\")[-1])  # add file name to 1st position in list
     return fileContent
 
 
 def cpuInfoPhysicalServer(strFileName):
-    lstSearchForPhysicalSrv = ["FileName", "Machine Name", "Operating System Name","Operating System Release","processor", "model name", "cpu cores",
-                          "physical id", "siblings"]
-    # constant
-    constForReading = "r"
-    #
-    #CAREFULLY WITH THIS ONE
-    #NEEDS TO BE COMMENTED BEFORE NORMAL USAGE
-    #strFileName = "X:\\Oracle\\Latvia\\Collection-apolon1.dnb.lv_DB\\CPUQ\\apolon1.dnb.lv-ct_cpuq.txt"
+    """
+    :param strFileName:
+    :return lstServerData: dictionary containing data about physical server CPU and OS
+    """
+    # uncommment for tests
+    # strFileName = "X:\\Oracle\\Latvia\\Collection-apolon1.dnb.lv_DB\\CPUQ\\apolon1.dnb.lv-ct_cpuq.txt"
+    lstSearchForPhysicalSrv = ["FileName", "Machine Name", "Operating System Name", "Operating System Release",
+                               "processor", "model name", "cpu cores",
+                               "physical id", "siblings"]
 
-    lstServerData = {} #store server data here in this dict
-    strLines = getFileContent(strFileName) #file content
+    lstServerData = {}  # store server data here in this dict <<< this is returned from the func
+    strLines = getFileContent(strFileName)  # file content
     for item in lstSearchForPhysicalSrv:
         lstResults = [i for i in strLines if item in i]
-        print (lstResults)
+        print(lstResults)
         for itemLine in lstResults:
             tmpLst = itemLine.split(":")
             if "processor" in tmpLst[0]:
