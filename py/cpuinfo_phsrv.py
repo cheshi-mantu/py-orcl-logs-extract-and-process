@@ -1,5 +1,7 @@
 import os
 import sys
+import helpers
+import pandas as pd
 
 """
 >>>>>>>>>>> 1 type: physical server
@@ -14,7 +16,6 @@ siblings	: 3 <<<<<<<<<<<<<<<< collect take the value and add to the 4th record a
 core id		: 0 <<<<<<<<<<<<<<<< collect and count to 5th record
 cpu cores	: 3 <<<<<<<<<<<<<<<< collect and sum to 6th record
 """
-
 
 def getFileContent(strFullPath):
     """
@@ -31,48 +32,94 @@ def getFileContent(strFullPath):
     f = open(strFullPath, constForReading)  # open file for reading
     fileContent = f.read().splitlines()  # read full file and send it content spitted in lines to a list
     f.close()  # close file (atta boy!)
-    fileContent = fileContent[fileContent.index(
-        "[END SCRIPT INFO]") + 1:]  # find [END SCRIPT INFO] marker and cut file as we don't need the script info at all
-    fileContent = [s.replace("\t", "") for s in fileContent]  # replace all TAB chars with empty strings
-    fileContent = [s.replace(": ", ":") for s in fileContent]  # replace : followed by space by just :
-    fileContent = [s.replace("=", ":") for s in
-                   fileContent]  # replace all = sign with : so it will be easier to process
-    fileContent.insert(0, "FileName:" + strFullPath.split("\\")[-1])  # add file name to 1st position in list
+    #now, check if it is real server, not VM
+    if "+ cat /proc/cpuinfo" in fileContent:
+
+        fileContent = fileContent[fileContent.index(
+            "[END SCRIPT INFO]") + 1:]  # find [END SCRIPT INFO] marker and cut file as we don't need the script info at all
+        fileContent = [s.replace("\t", "") for s in fileContent]  # replace all TAB chars with empty strings
+        fileContent = [s.replace(": ", ":") for s in fileContent]  # replace : followed by space by just :
+        fileContent = [s.replace("=", ":") for s in
+                       fileContent]  # replace all = sign with : so it will be easier to process
+        fileContent.insert(0, "FileName:" + strFullPath.split("\\")[-1])  # add file name to 1st position in list
+        fileContent.insert(1, "type:physical")  # add file name to 1st position in list
+    else:
+        fileContent = ["type:VM",
+                       "Machine Name:VM",
+                       "Operating System Name:VM",
+                       "Operating System Release:VM",
+                       "processor:VM",
+                       "model name:VM",
+                       "cpu cores:VM",
+                       "siblings:VM"]
+        fileContent.insert(0, "FileName:" + strFullPath.split("\\")[-1])  # add file name to 1st position in list
     return fileContent
 
 
 def cpuInfoPhysicalServer(strFileName):
     """
     :param strFileName:
-    :return lstServerData: dictionary containing data about physical server CPU and OS
+    :return dictServerData: dictionary containing data about physical server CPU and OS
     """
-    # uncommment for tests
-    # strFileName = "X:\\Oracle\\Latvia\\Collection-apolon1.dnb.lv_DB\\CPUQ\\apolon1.dnb.lv-ct_cpuq.txt"
-    lstSearchForPhysicalSrv = ["FileName", "Machine Name", "Operating System Name", "Operating System Release",
-                               "processor", "model name", "cpu cores",
-                               "physical id", "siblings"]
+    lstSearchForPhysicalSrv = ["FileName", "type", "Machine Name", "Operating System Name", "Operating System Release",
+                               "processor:", "model name", "cpu cores", "siblings"]
 
-    lstServerData = {}  # store server data here in this dict <<< this is returned from the func
+    dictServerData = {}  # store server data here in this dict <<< this is returned from the func
     strLines = getFileContent(strFileName)  # file content
     for item in lstSearchForPhysicalSrv:
         lstResults = [i for i in strLines if item in i]
-        print(lstResults)
         for itemLine in lstResults:
-            tmpLst = itemLine.split(":")
-            if "processor" in tmpLst[0]:
-                lstServerData[tmpLst[0]] = len(lstResults)
-            else:
-                if tmpLst[0] in lstServerData:
-                    if tmpLst[1].isdigit():
-                        lstServerData[tmpLst[0]] += int(tmpLst[1])
-                    else:
-                        if tmpLst[1] == lstServerData[tmpLst[0]]:
-                            pass
-                        else:
-                            lstServerData[tmpLst[0]] += tmpLst[1]
+            if ":" in itemLine:
+                tmpLst = itemLine.split(":")
+                if "processor" in tmpLst[0]:
+                    dictServerData[tmpLst[0]] = len(lstResults)
                 else:
-                    if tmpLst[1].isdigit():
-                        lstServerData[tmpLst[0]] = int(tmpLst[1])
+                    if tmpLst[0] in dictServerData:
+                        if tmpLst[1].isdigit():
+                            dictServerData[tmpLst[0]] += int(tmpLst[1])
+                        else:
+                            if tmpLst[1] == dictServerData[tmpLst[0]]:
+                                pass
+                            else:
+                                dictServerData[tmpLst[0]] += tmpLst[1]
                     else:
-                        lstServerData[tmpLst[0]] = tmpLst[1]
-    return lstServerData
+                        if tmpLst[1].isdigit():
+                            dictServerData[tmpLst[0]] = int(tmpLst[1])
+                        else:
+                            dictServerData[tmpLst[0]] = tmpLst[1]
+    return dictServerData
+def traversePhysicalServers(strFolder):
+    """
+    :param strFolder:
+    :return lstPhysicalServers = []: will returtn the list of all the physical servers data
+    """
+    lstPhysicalServers = []
+    # uncommment for tests
+    for root, dirs, files in os.walk(strFolder):
+        for file in files:
+            strFullPath = root+"\\"+file
+            if "_cpuq.txt" in strFullPath:
+                lstPhysicalServers.append(cpuInfoPhysicalServer(strFullPath))
+    return lstPhysicalServers
+
+# def getWorkingFolder(strFilesFolder = ""):
+#     while strFilesFolder == "":
+#         strFilesFolder = input("Please paste the path to the folder with all archives you have: ")
+#         if strFilesFolder == "exit":
+#             print ("User aborted the script. Quitting.")
+#             quit()
+#         if os.path.exists(strFilesFolder):
+#             break
+#         else:
+#             strFilesFolder = ""
+#             print("If you want to exit this script, you can type \"exit\"")
+#     print(f"We'll proceed with files from {strFilesFolder}")
+#     return strFilesFolder
+
+strBaseFolder = "X:\\Oracle"
+lstCountries = ["Latvia","Lithuania"]
+strWrkPath = ""
+for country in lstCountries:
+    strWrkPath = getWorkingFolder(strBaseFolder+"\\"+country)
+    df = pd.DataFrame(traversePhysicalServers(strWrkPath))
+    df.to_csv("cpuinfo_" + country + ".csv")

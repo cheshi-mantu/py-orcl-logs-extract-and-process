@@ -1,5 +1,6 @@
 import os
 import sys
+import helpers
 """
 extracting archives 1 y 1 using 7zip executable installed in the OS
 command line parameters for 7zip.exe: " x -o* ", i.e. extract and create directory with the name of source archive
@@ -23,19 +24,19 @@ def extractorSysCheck():
         return False
         quit()
 
-def getWorkingFolder(strFilesFolder):
-    while strFilesFolder == "":
-        strFilesFolder = input("Please paste the path to the folder with all archives you have: ")
-        if strFilesFolder == "exit":
-            print ("User aborted the script. Quitting.")
-            quit()
-        if os.path.exists(strFilesFolder):
-            break
-        else:
-            strFilesFolder = ""
-            print("If you want to exit this script, you can type \"exit\"")
-    print(f"We'll proceed with files from {strFilesFolder}")
-    return strFilesFolder
+# def getWorkingFolder(strFilesFolder):
+#     while strFilesFolder == "":
+#         strFilesFolder = input("Please paste the path to the folder with all archives you have: ")
+#         if strFilesFolder == "exit":
+#             print ("User aborted the script. Quitting.")
+#             quit()
+#         if os.path.exists(strFilesFolder):
+#             break
+#         else:
+#             strFilesFolder = ""
+#             print("If you want to exit this script, you can type \"exit\"")
+#     print(f"We'll proceed with files from {strFilesFolder}")
+#     return strFilesFolder
 
 # extract files from .Z archives, move Z archives and archives with "debug" string in file name to done folder
 # we have no use for debug files so no further extraction for them is needed
