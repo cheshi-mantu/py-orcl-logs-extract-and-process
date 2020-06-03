@@ -1,4 +1,5 @@
 #helpers.py
+import os
 def getWorkingFolder(strFilesFolder):
     while strFilesFolder == "":
         strFilesFolder = input("Please paste the path to the folder with all archives you have: ")

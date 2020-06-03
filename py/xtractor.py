@@ -1,6 +1,9 @@
 import os
 import sys
 import helpers
+
+from py.helpers import getWorkingFolder
+
 """
 extracting archives 1 y 1 using 7zip executable installed in the OS
 command line parameters for 7zip.exe: " x -o* ", i.e. extract and create directory with the name of source archive
@@ -38,6 +41,15 @@ def extractorSysCheck():
 #     print(f"We'll proceed with files from {strFilesFolder}")
 #     return strFilesFolder
 
+def debugMove(strFilesFolder):
+    for root, dirs, files in os.walk(strFilesFolder):
+        if not os.path.exists(strFilesFolder+"\\done"):
+            os.mkdir(strFilesFolder+"\\done")
+        for file in files:
+            if ("debug_" in file):
+                os.replace(root+"\\"+file, root+"\\done\\"+file)
+        break
+
 # extract files from .Z archives, move Z archives and archives with "debug" string in file name to done folder
 # we have no use for debug files so no further extraction for them is needed
 def extractZandMove(str7ZipSysExecPath, strFilesFolder):
@@ -46,7 +58,7 @@ def extractZandMove(str7ZipSysExecPath, strFilesFolder):
     #first pass is to extract all .Z files as they are archives with tar inside and we need tar to be extracted
     for root, dirs, files in os.walk(strFilesFolder):
         for file in files:
-            if (("Collection" in file) and ("tar.Z" in file)) or (("Collection" in file) and ("tar.bz2" in file)):
+            if (("debug_" not in file) and ("tar.Z" in file)) or (("debug_" not in file) and ("tar.bz2" in file)):
                 print(f"Processing {root}\\{file}")
                 os.system(str7ZipSysExecPath + strCmdLineZ + root + "\\" + file)
     # move all .Z files and Debug archives to done folder
@@ -55,7 +67,7 @@ def extractZandMove(str7ZipSysExecPath, strFilesFolder):
         if not os.path.exists(strFilesFolder+"\\done"):
             os.mkdir(strFilesFolder+"\\done")
         for file in files:
-            if ("ebug" in file) or ("tar.Z" in file) or ("tar.bz2" in file):
+            if ("debug_" in file) or ("tar.Z" in file) or ("tar.bz2" in file):
                 os.replace(root+"\\"+file, root+"\\done\\"+file)
         break
 #
@@ -80,6 +92,7 @@ Now runnig the scripts
 """
 if extractorSysCheck():
     strFilesFolder = getWorkingFolder(strFilesFolder)
+    debugMove(strFilesFolder)
     extractZandMove(str7ZipSysExecPath, strFilesFolder)
     extractTarsAndMove(str7ZipSysExecPath, strFilesFolder)
 
