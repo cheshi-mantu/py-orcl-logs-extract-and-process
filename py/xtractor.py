@@ -1,6 +1,5 @@
 import os
 import sys
-import helpers
 
 from py.helpers import getWorkingFolder
 
@@ -11,7 +10,7 @@ command line parameters for 7zip.exe: " x -o* ", i.e. extract and create directo
 #path to 7Zip x64 bits executable
 str7ZipExecFile = "C:\\Program Files\\7-Zip\\7z.exe"
 # variable to store consumable string to execute in shell
-str7ZipSysExecPath = "" # will be set furteher after we are sure executable exists
+str7ZipSysExecPath = "" # will be set further after we are sure executable exists
 
 #folder where we expecting all the archives to be stored
 strFilesFolder = ""
@@ -26,20 +25,6 @@ def extractorSysCheck():
         print(f"Executable file {str7ZipExecFile} does not exist. Please install x64 bits version of 7Zip archiver and restart")
         return False
         quit()
-
-# def getWorkingFolder(strFilesFolder):
-#     while strFilesFolder == "":
-#         strFilesFolder = input("Please paste the path to the folder with all archives you have: ")
-#         if strFilesFolder == "exit":
-#             print ("User aborted the script. Quitting.")
-#             quit()
-#         if os.path.exists(strFilesFolder):
-#             break
-#         else:
-#             strFilesFolder = ""
-#             print("If you want to exit this script, you can type \"exit\"")
-#     print(f"We'll proceed with files from {strFilesFolder}")
-#     return strFilesFolder
 
 def debugMove(strFilesFolder):
     for root, dirs, files in os.walk(strFilesFolder):
@@ -72,22 +57,6 @@ def extractAndMove(str7ZipSysExecPath, strFilesFolder, listStrToExtract, strHowT
                     os.replace(root + "\\" + file, root + "\\done\\" + file)
         break
 #
-# def extractTarsAndMove(str7ZipSysExecPath, strFilesFolder):
-#     #command line for 7Zip executable for tar archives extraction
-#
-#     #second pass: extracting data from tar files
-#     # #traverse 1st level of the os.walk
-#     for root, dirs, files in os.walk(strFilesFolder):
-#         if "done" not in root:
-#             for file in files:
-#                 if ".tar" in file:
-#                     print(f"Processing {root}\\{file}")
-#                     os.system(str7ZipSysExecPath + strCmdLine + root + "\\" + file)
-#                     try:
-#                         os.replace(root + "\\" + file, root + "\\done\\" + file)
-#                     except:
-#                         print("Something is troubling me")
-#             break
 """
 Now runnig the scripts
 """

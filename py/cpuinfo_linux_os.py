@@ -1,7 +1,8 @@
 import os
 import sys
-import helpers
 import pandas as pd
+
+from py.helpers import getWorkingFolder
 
 """
 >>>>>>>>>>> 1 type: physical server
@@ -44,14 +45,14 @@ def getFileContent(strFullPath):
         fileContent.insert(0, "FileName:" + strFullPath.split("\\")[-1])  # add file name to 1st position in list
         fileContent.insert(1, "type:physical")  # add file name to 1st position in list
     else:
-        fileContent = ["type:VM",
-                       "Machine Name:VM",
-                       "Operating System Name:VM",
-                       "Operating System Release:VM",
-                       "processor:VM",
-                       "model name:VM",
-                       "cpu cores:VM",
-                       "siblings:VM"]
+        fileContent = ["type:NotOracleLinux",
+                       "Machine Name:NotOracleLinux",
+                       "Operating System Name:NotOracleLinux",
+                       "Operating System Release:NotOracleLinux",
+                       "processor:NotOracleLinux",
+                       "model name:NotOracleLinux",
+                       "cpu cores:NotOracleLinux",
+                       "siblings:NotOracleLinux"]
         fileContent.insert(0, "FileName:" + strFullPath.split("\\")[-1])  # add file name to 1st position in list
     return fileContent
 
@@ -102,19 +103,6 @@ def traversePhysicalServers(strFolder):
                 lstPhysicalServers.append(cpuInfoPhysicalServer(strFullPath))
     return lstPhysicalServers
 
-# def getWorkingFolder(strFilesFolder = ""):
-#     while strFilesFolder == "":
-#         strFilesFolder = input("Please paste the path to the folder with all archives you have: ")
-#         if strFilesFolder == "exit":
-#             print ("User aborted the script. Quitting.")
-#             quit()
-#         if os.path.exists(strFilesFolder):
-#             break
-#         else:
-#             strFilesFolder = ""
-#             print("If you want to exit this script, you can type \"exit\"")
-#     print(f"We'll proceed with files from {strFilesFolder}")
-#     return strFilesFolder
 
 strBaseFolder = "X:\\Oracle"
 lstCountries = ["Latvia","Lithuania"]
