@@ -105,9 +105,9 @@ def traversePhysicalServers(strFolder):
 
 
 strBaseFolder = "X:\\Oracle"
-lstCountries = ["Latvia","Lithuania"]
+lstCountries = ["Latvia", "Lithuania"]
 strWrkPath = ""
 for country in lstCountries:
     strWrkPath = getWorkingFolder(strBaseFolder+"\\"+country)
     df = pd.DataFrame(traversePhysicalServers(strWrkPath))
-    df.to_csv("cpuinfo_" + country + ".csv")
+    df.to_csv(strBaseFolder + "\\cpuinfo_" + country + ".csv")

@@ -2,13 +2,13 @@ import os
 import sys
 
 from py.helpers import getWorkingFolder
-
 """
 extracting archives 1 y 1 using 7zip executable installed in the OS
 command line parameters for 7zip.exe: " x -o* ", i.e. extract and create directory with the name of source archive
 """
 #path to 7Zip x64 bits executable
 str7ZipExecFile = "C:\\Program Files\\7-Zip\\7z.exe"
+
 # variable to store consumable string to execute in shell
 str7ZipSysExecPath = "" # will be set further after we are sure executable exists
 
@@ -37,7 +37,7 @@ def debugMove(strFilesFolder):
 
 # extract files from .Z archives, move Z archives and archives with "debug" string in file name to done folder
 # we have no use for debug files so no further extraction for them is needed
-def extractAndMove(str7ZipSysExecPath, strFilesFolder, listStrToExtract, strHowToExtract):
+def extractAndMoveZ(str7ZipSysExecPath, strFilesFolder, listStrToExtract, strHowToExtract):
     if strHowToExtract == "here":
         strCmdLineZ = " x -o" + strFilesFolder + " "
     elif strHowToExtract == "subfolder":
@@ -56,12 +56,15 @@ def extractAndMove(str7ZipSysExecPath, strFilesFolder, listStrToExtract, strHowT
                     os.system(str7ZipSysExecPath + strCmdLineZ + root + "\\" + file)
                     os.replace(root + "\\" + file, root + "\\done\\" + file)
         break
+
 #
 """
 Now runnig the scripts
 """
+#extraction with 7zip
+
 if extractorSysCheck():
     strFilesFolder = getWorkingFolder(strFilesFolder)
     debugMove(strFilesFolder)
-    extractAndMove(str7ZipSysExecPath, strFilesFolder, [".tar.Z", ".tar.bz"], "here")
-    extractAndMove(str7ZipSysExecPath, strFilesFolder, [".tar"], "subfolder")
+    extractAndMoveZ(str7ZipSysExecPath, strFilesFolder, [".tar.Z", ".tar.bz"], "here")
+    extractAndMoveZ(str7ZipSysExecPath, strFilesFolder, [".tar"], "subfolder")
